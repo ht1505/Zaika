@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ZAIKA — Analytics Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:#07080f; --s1:#0d0e1c; --s2:#111322; --card:#151728; --card2:#181b2e;
+  --b1:#1d2035; --b2:#252848; --b3:#2e3358;
+  --saffron:#E85D04; --saffron2:#c94e02; --saffron3:#ff8c42;
+  --turmeric:#FFD166; --turmeric2:#fde08a;
+  --forest:#1B4332; --teal:#2dd4bf;
+  --blue:#4f8ef7; --grn:#3ddc84; --red:#ff4f6e; --pur:#b57bff;
+  --txt:#f0f0f8; --mut:#6270a0; --mut2:#3a3d60;
+  --cat-star:#FFD166; --cat-hidden:#2dd4bf; --cat-risk:#ff4f6e; --cat-dog:#b57bff;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 40% at 8% 5%,rgba(232,93,4,.08) 0%,transparent 55%),
+             radial-gradient(ellipse 45% 50% at 92% 90%,rgba(79,142,247,.05) 0%,transparent 55%),
+             radial-gradient(ellipse 30% 60% at 50% 50%,rgba(255,209,102,.03) 0%,transparent 70%);
+  background-image:linear-gradient(rgba(232,93,4,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(232,93,4,.015) 1px,transparent 1px);
+  background-size:40px 40px}
+.wrap{position:relative;z-index:1;max-width:1440px;margin:0 auto;padding:20px 24px 56px}
+
+/* ── Header ── */
+header{display:flex;align-items:center;justify-content:space-between;padding-bottom:20px;border-bottom:1px solid var(--b1);margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.hdr-l{display:flex;align-items:center;gap:14px}
+.logo{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--saffron),var(--saffron2));
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+  box-shadow:0 4px 24px rgba(232,93,4,.4)}
+.brand-name{font-family:'Playfair Display',serif;font-size:24px;font-weight:800;line-height:1;color:var(--txt)}
+.brand-sub{font-size:10px;color:var(--mut);letter-spacing:.14em;text-transform:uppercase;margin-top:2px}
+.hdr-r{display:flex;align-items:center;gap:10px}
+.pill{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;
+  background:var(--s2);border:1px solid var(--b2);font-size:11px;color:var(--mut);
+  font-family:'DM Mono',monospace;letter-spacing:.04em}
+.pdot{width:5px;height:5px;border-radius:50%;background:var(--grn);box-shadow:0 0 6px var(--grn);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── Filters Bar ── */
+.filters{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:24px;
+  padding:14px 18px;background:var(--card);border:1px solid var(--b1);border-radius:14px}
+.filter-group{display:flex;align-items:center;gap:8px}
+.filter-lbl{font-size:10px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.12em;color:var(--mut);white-space:nowrap}
+.filter-sel{background:var(--s2);border:1px solid var(--b2);border-radius:9px;
+  color:var(--txt);font-family:'DM Sans',sans-serif;font-size:12px;padding:6px 28px 6px 10px;
+  cursor:pointer;outline:none;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236270a0'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 8px center}
+.filter-sel:focus{border-color:var(--saffron)}
+.filter-div{width:1px;height:24px;background:var(--b2)}
+.reset-btn{padding:6px 14px;border-radius:9px;background:transparent;border:1px solid var(--b2);
+  color:var(--mut);font-size:11px;cursor:pointer;transition:all .2s}
+.reset-btn:hover{border-color:var(--saffron);color:var(--saffron)}
+
+/* ── KPI Row ── */
+.kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:24px}
+@media(max-width:1200px){.kpi-row{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){.kpi-row{grid-template-columns:repeat(2,1fr)}}
+.kpi-card{background:var(--card);border:1px solid var(--b1);border-radius:16px;
+  padding:18px 20px;position:relative;overflow:hidden;cursor:default;
+  transition:transform .2s,box-shadow .2s}
+.kpi-card:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.kpi-card::before{content:'';position:absolute;inset:0;border-radius:16px;
+  background:linear-gradient(135deg,var(--accent-color,rgba(232,93,4,.08)) 0%,transparent 60%);pointer-events:none}
+.kpi-label{font-size:10px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.1em;color:var(--mut);margin-bottom:8px}
+.kpi-value{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--txt);line-height:1;margin-bottom:4px}
+.kpi-sub{font-size:11px;color:var(--mut);margin-top:4px}
+.kpi-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;margin-top:6px}
+.kpi-badge.up{background:rgba(61,220,132,.12);color:var(--grn)}
+.kpi-badge.neu{background:rgba(79,142,247,.12);color:var(--blue)}
+.kpi-icon{position:absolute;right:16px;top:16px;font-size:22px;opacity:.3}
+
+/* ── Section Headers ── */
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.section-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--txt)}
+.section-title span{color:var(--saffron)}
+.section-badge{font-size:10px;font-family:'DM Mono',monospace;padding:3px 10px;border-radius:20px;background:var(--b2);color:var(--mut);letter-spacing:.08em}
+.tab-group{display:flex;gap:4px}
+.tab-btn{padding:5px 12px;border-radius:8px;border:1px solid var(--b2);background:transparent;
+  color:var(--mut);font-size:11px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
+.tab-btn.active,.tab-btn:hover{background:var(--saffron);border-color:var(--saffron);color:#fff}
+
+/* ── Chart Grid ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:18px}
+.grid-65{display:grid;grid-template-columns:1.5fr 1fr;gap:18px;margin-bottom:18px}
+.grid-56{display:grid;grid-template-columns:1fr 1.5fr;gap:18px;margin-bottom:18px}
+@media(max-width:1000px){.grid-2,.grid-3,.grid-65,.grid-56{grid-template-columns:1fr}}
+.chart-card{background:var(--card);border:1px solid var(--b1);border-radius:16px;padding:20px 22px;position:relative}
+.chart-card:hover{border-color:var(--b2)}
+.chart-wrap{position:relative;width:100%}
+
+/* ── Table ── */
+.tbl-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--b1)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead tr{background:var(--s2)}
+th{padding:10px 14px;text-align:left;font-family:'DM Mono',monospace;font-size:9px;
+  text-transform:uppercase;letter-spacing:.12em;color:var(--mut);border-bottom:1px solid var(--b1);
+  cursor:pointer;user-select:none;white-space:nowrap}
+th:hover{color:var(--saffron)}
+th .sort-icon{margin-left:4px;opacity:.4}
+tbody tr{border-bottom:1px solid var(--b1);transition:background .15s}
+tbody tr:hover{background:var(--s2)}
+tbody tr:last-child{border-bottom:none}
+td{padding:9px 14px;color:var(--txt);vertical-align:middle}
+.td-mono{font-family:'DM Mono',monospace;font-size:11px}
+.bcg-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:600;white-space:nowrap}
+.bcg-star{background:rgba(255,209,102,.15);color:var(--cat-star)}
+.bcg-hidden{background:rgba(45,212,191,.15);color:var(--cat-hidden)}
+.bcg-risk{background:rgba(255,79,110,.15);color:var(--cat-risk)}
+.bcg-dog{background:rgba(181,123,255,.15);color:var(--cat-dog)}
+.margin-green{color:#3ddc84}
+.margin-amber{color:#FFD166}
+.margin-red{color:#ff4f6e}
+.stars{color:var(--turmeric);font-size:11px}
+.bar-mini{height:4px;border-radius:2px;background:var(--b2);overflow:hidden;margin-top:4px}
+.bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--saffron),var(--saffron3))}
+
+/* ── Upsell cards ── */
+.upsell-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:18px}
+.upsell-card{background:var(--card2);border:1px solid var(--b1);border-radius:14px;padding:16px;
+  transition:transform .2s,box-shadow .2s,border-color .2s}
+.upsell-card:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,.3);border-color:var(--b2)}
+.uc-name{font-size:13px;font-weight:600;color:var(--txt);margin-bottom:6px}
+.uc-conf{font-size:22px;font-family:'Playfair Display',serif;font-weight:700;color:var(--saffron)}
+.uc-sub{font-size:10px;color:var(--mut);margin-top:2px;font-family:'DM Mono',monospace}
+.conf-bar{height:6px;border-radius:3px;background:var(--b2);overflow:hidden;margin-top:10px}
+.conf-fill{height:100%;border-radius:3px;transition:width .8s ease}
+
+/* ── Pair cards ── */
+.pair-list{display:flex;flex-direction:column;gap:8px}
+.pair-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--s2);border-radius:10px;border:1px solid var(--b1)}
+.pair-names{flex:1;font-size:12px;font-weight:500;color:var(--txt)}
+.pair-plus{color:var(--saffron);font-size:14px;font-weight:700;margin:0 4px}
+.pair-count{font-family:'DM Mono',monospace;font-size:12px;color:var(--grn);font-weight:600}
+.pair-bar-wrap{width:90px;flex-shrink:0}
+.pair-bar{height:4px;border-radius:2px;background:var(--b2);overflow:hidden}
+.pair-bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--teal),var(--blue))}
+
+/* ── BCG Quadrant ── */
+.bcg-quads{display:grid;grid-template-columns:1fr 1fr;gap:2px;border-radius:12px;overflow:hidden;border:1px solid var(--b2)}
+.bcg-q{padding:10px 14px;font-size:11px;font-weight:600}
+.q-star{background:rgba(255,209,102,.07);color:var(--cat-star)}
+.q-hidden{background:rgba(45,212,191,.07);color:var(--cat-hidden)}
+.q-risk{background:rgba(255,79,110,.07);color:var(--cat-risk)}
+.q-dog{background:rgba(181,123,255,.07);color:var(--cat-dog)}
+
+/* ── City heatmap ── */
+.heatmap-wrap{overflow-x:auto}
+.heatmap-table{width:100%;border-collapse:collapse;font-size:11px}
+.heatmap-table th{padding:8px 10px;text-align:center;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;color:var(--mut);background:var(--s2)}
+.heatmap-table td{padding:7px 10px;text-align:center;font-family:'DM Mono',monospace;font-size:10px;font-weight:500;border:1px solid var(--b1)}
+.heatmap-table .row-lbl{text-align:left;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;background:var(--s2);white-space:nowrap;padding-left:14px}
+
+/* ── Insights ── */
+.insight-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+@media(max-width:900px){.insight-row{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.insight-row{grid-template-columns:1fr}}
+.insight-card{background:var(--card);border:1px solid var(--b1);border-radius:14px;padding:16px 18px}
+.insight-tag{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:9px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
+.tag-high{background:rgba(61,220,132,.12);color:var(--grn)}
+.tag-med{background:rgba(255,209,102,.12);color:var(--turmeric)}
+.tag-low{background:rgba(79,142,247,.12);color:var(--blue)}
+.insight-title{font-size:13px;font-weight:600;color:var(--txt);margin-bottom:4px}
+.insight-body{font-size:11px;color:var(--mut);line-height:1.6}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--s1)}
+::-webkit-scrollbar-thumb{background:var(--b3);border-radius:2px}
+
+/* ── Responsive ── */
+@media(max-width:700px){
+  .wrap{padding:12px 12px 40px}
+  .kpi-value{font-size:20px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HEADER -->
+<header>
+  <div class="hdr-l">
+    <div class="logo">🍛</div>
+    <div>
+      <div class="brand-name">ZAIKA</div>
+      <div class="brand-sub">Analytics Intelligence</div>
+    </div>
+  </div>
+  <div class="hdr-r">
+    <div class="pill"><span class="pdot"></span>Live Data</div>
+    <div class="pill" id="live-time" style="font-size:11px">--:--</div>
+  </div>
+</header>
+
+<!-- FILTERS BAR -->
+<div class="filters">
+  <div class="filter-group">
+    <span class="filter-lbl">Category</span>
+    <select class="filter-sel" id="f-cat" onchange="applyFilters()">
+      <option value="all">All Categories</option>
+      <option value="Star">⭐ Star</option>
+      <option value="Hidden Star">💎 Hidden Star</option>
+      <option value="Risk">⚠️ Risk</option>
+      <option value="Dog">🐾 Dog</option>
+    </select>
+  </div>
+  <div class="filter-div"></div>
+  <div class="filter-group">
+    <span class="filter-lbl">Cuisine</span>
+    <select class="filter-sel" id="f-cuisine" onchange="applyFilters()">
+      <option value="all">All Cuisines</option>
+    </select>
+  </div>
+  <div class="filter-div"></div>
+  <div class="filter-group">
+    <span class="filter-lbl">Date Range</span>
+    <select class="filter-sel" id="f-daterange" onchange="applyFilters()">
+      <option value="all">Full Period (March)</option>
+      <option value="week1">Week 1 (Mar 1–7)</option>
+      <option value="week2">Week 2 (Mar 8–14)</option>
+      <option value="week3">Week 3 (Mar 15–21)</option>
+      <option value="week4">Week 4 (Mar 22–31)</option>
+    </select>
+  </div>
+  <div class="filter-div"></div>
+  <div class="filter-group">
+    <span class="filter-lbl">View</span>
+    <select class="filter-sel" id="f-metric" onchange="applyFilters()">
+      <option value="revenue">Revenue</option>
+      <option value="profit">Profit</option>
+      <option value="orders">Orders</option>
+    </select>
+  </div>
+  <button class="reset-btn" onclick="resetFilters()">↺ Reset</button>
+</div>
+
+<!-- KPI ROW -->
+<div class="kpi-row" id="kpi-row">
+  <div class="kpi-card" style="--accent-color:rgba(232,93,4,.1)">
+    <div class="kpi-icon">₹</div>
+    <div class="kpi-label">Total Revenue</div>
+    <div class="kpi-value" id="k-revenue">₹1.45Cr</div>
+    <div class="kpi-badge up" id="k-revenue-b">↑ All Cities</div>
+  </div>
+  <div class="kpi-card" style="--accent-color:rgba(61,220,132,.08)">
+    <div class="kpi-icon">💰</div>
+    <div class="kpi-label">Total Profit</div>
+    <div class="kpi-value" id="k-profit">₹67.5L</div>
+    <div class="kpi-badge up" id="k-profit-b">↑ 46.6% margin</div>
+  </div>
+  <div class="kpi-card" style="--accent-color:rgba(79,142,247,.08)">
+    <div class="kpi-icon">📦</div>
+    <div class="kpi-label">Total Orders</div>
+    <div class="kpi-value" id="k-orders">12,440</div>
+    <div class="kpi-badge neu" id="k-orders-b">~401/day</div>
+  </div>
+  <div class="kpi-card" style="--accent-color:rgba(255,209,102,.08)">
+    <div class="kpi-icon">🛒</div>
+    <div class="kpi-label">Avg Order Value</div>
+    <div class="kpi-value" id="k-aov">₹1,165</div>
+    <div class="kpi-badge neu" id="k-aov-b">Per order</div>
+  </div>
+  <div class="kpi-card" style="--accent-color:rgba(45,212,191,.08)">
+    <div class="kpi-icon">📊</div>
+    <div class="kpi-label">Profit Margin</div>
+    <div class="kpi-value" id="k-margin">46.6%</div>
+    <div class="kpi-badge up" id="k-margin-b">↑ Healthy</div>
+  </div>
+  <div class="kpi-card" style="--accent-color:rgba(181,123,255,.08)">
+    <div class="kpi-icon">🍽️</div>
+    <div class="kpi-label">Menu Items</div>
+    <div class="kpi-value" id="k-items">67</div>
+    <div class="kpi-badge neu" id="k-items-b">Across cuisines</div>
+  </div>
+</div>
+
+<!-- ROW 1: Revenue Trend + Hourly Heatmap -->
+<div class="grid-65">
+  <div class="chart-card">
+    <div class="section-hdr">
+      <div class="section-title">Revenue & Profit <span>Trend</span></div>
+      <div class="tab-group">
+        <button class="tab-btn active" onclick="switchTrend('revenue',this)">Revenue</button>
+        <button class="tab-btn" onclick="switchTrend('profit',this)">Profit</button>
+        <button class="tab-btn" onclick="switchTrend('orders',this)">Orders</button>
+      </div>
+    </div>
+    <div class="chart-wrap" style="height:240px"><canvas id="c-trend"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <div class="section-hdr">
+      <div class="section-title">Orders by <span>Hour</span></div>
+      <div class="section-badge">PEAK ANALYSIS</div>
+    </div>
+    <div class="chart-wrap" style="height:240px"><canvas id="c-hourly"></canvas></div>
+  </div>
+</div>
+
+<!-- ROW 2: Category Breakdown -->
+<div class="chart-card" style="margin-bottom:18px">
+  <div class="section-hdr">
+    <div class="section-title">Category <span>Performance</span></div>
+    <div class="tab-group">
+      <button class="tab-btn active" onclick="switchCatChart('revenue',this)">Revenue</button>
+      <button class="tab-btn" onclick="switchCatChart('orders',this)">Orders</button>
+      <button class="tab-btn" onclick="switchCatChart('margin',this)">Margin %</button>
+    </div>
+  </div>
+  <div class="chart-wrap" style="height:280px"><canvas id="c-cat"></canvas></div>
+</div>
+
+<!-- ROW 3: Cuisine + Day of Week -->
+<div class="grid-2">
+  <div class="chart-card">
+    <div class="section-hdr">
+      <div class="section-title">Revenue by <span>Cuisine</span></div>
+      <div class="section-badge">8 CUISINES</div>
+    </div>
+    <div class="chart-wrap" style="height:260px"><canvas id="c-cuisine"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <div class="section-hdr">
+      <div class="section-title">Revenue by <span>Day of Week</span></div>
+      <div class="section-badge">WEEKLY PATTERN</div>
+    </div>
+    <div class="chart-wrap" style="height:260px"><canvas id="c-dow"></canvas></div>
+  </div>
+</div>
+
+<!-- ROW 4: Margin Distribution + Rating vs Profit scatter -->
+<div class="grid-2">
+  <div class="chart-card">
+    <div class="section-hdr">
+      <div class="section-title">Margin % <span>Distribution</span></div>
+      <div class="section-badge">BY CATEGORY</div>
+    </div>
+    <div class="chart-wrap" style="height:280px"><canvas id="c-margin"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <div class="section-hdr">
+      <div class="section-title">Rating vs <span>Profit</span> — Value Map</div>
+      <div class="section-badge">QUALITY × PROFIT</div>
+    </div>
+    <div class="chart-wrap" style="height:280px"><canvas id="c-rating-profit"></canvas></div>
+  </div>
+</div>
+
+<!-- ROW 5: Top 10 Items by Profit -->
+<div class="chart-card" style="margin-bottom:18px">
+  <div class="section-hdr">
+    <div class="section-title">Top 10 Items — <span>Profit Contribution</span> & Margin %</div>
+    <div class="section-badge">PROFITABILITY LEADERS</div>
+  </div>
+  <div class="chart-wrap" style="height:260px"><canvas id="c-top-profit"></canvas></div>
+</div>
+
+<!-- UPSELL SECTION -->
+<div class="section-hdr" style="margin-bottom:12px">
+  <div class="section-title">🔗 Upsell & <span>Association Intelligence</span></div>
+  <div class="section-badge">AI-POWERED</div>
+</div>
+
+<div class="grid-56" style="margin-bottom:18px">
+  <div class="chart-card">
+    <div class="section-hdr">
+      <div class="section-title">Top <span>Upsell</span> Confidence</div>
+      <div class="section-badge">HIGH CONFIDENCE ITEMS</div>
+    </div>
+    <div class="upsell-grid" id="upsell-cards"></div>
+  </div>
+  <div class="chart-card">
+    <div class="section-hdr">
+      <div class="section-title">Frequent <span>Item Pairs</span></div>
+      <div class="section-badge">CO-OCCURRENCE</div>
+    </div>
+    <div class="chart-wrap" style="height:260px"><canvas id="c-pairs"></canvas></div>
+  </div>
+</div>
+
+<!-- Top Items Table -->
+<div class="chart-card" style="margin-bottom:18px">
+  <div class="section-hdr">
+    <div class="section-title">Menu Item <span>Performance</span> Table</div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <input type="text" id="tbl-search" placeholder="Search items..." oninput="filterTable()"
+        style="background:var(--s2);border:1px solid var(--b2);border-radius:9px;color:var(--txt);font-size:12px;padding:6px 12px;outline:none;width:180px">
+      <select class="filter-sel" id="tbl-cat" onchange="filterTable()">
+        <option value="all">All Categories</option>
+        <option value="Star">Star</option>
+        <option value="Hidden Star">Hidden Star</option>
+        <option value="Risk">Risk</option>
+        <option value="Dog">Dog</option>
+      </select>
+    </div>
+  </div>
+  <div class="tbl-wrap">
+    <table id="items-table">
+      <thead>
+        <tr>
+          <th onclick="sortTable('food_name')"># Item <span class="sort-icon">↕</span></th>
+          <th onclick="sortTable('category')">Category <span class="sort-icon">↕</span></th>
+          <th onclick="sortTable('revenue')">Revenue <span class="sort-icon">↕</span></th>
+          <th onclick="sortTable('profit')">Profit <span class="sort-icon">↕</span></th>
+          <th onclick="sortTable('orders')">Orders <span class="sort-icon">↕</span></th>
+          <th onclick="sortTable('avg_price')">Avg Price <span class="sort-icon">↕</span></th>
+          <th onclick="sortTable('rating')">Rating <span class="sort-icon">↕</span></th>
+        </tr>
+      </thead>
+      <tbody id="tbl-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- AI Insights -->
+<div class="section-hdr" style="margin-bottom:12px">
+  <div class="section-title">💡 <span>Insights</span> & Recommendations</div>
+</div>
+<div class="insight-row" id="insight-row"></div>
+
+</div><!-- /wrap -->
+
+<script>
+// ══════════════════════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════════════════════
+const RAW = {"kpis": {"total_revenue": 14489694, "total_profit": 6751264, "total_orders": 12440, "aov": 1164.77, "profit_margin": 46.59, "total_items": 67}, "cat_data": [{"category": "Dog", "revenue": 4007259, "profit": 1771656.98, "orders": 5823, "margin_pct": 44.21}, {"category": "Hidden Star", "revenue": 2315452, "profit": 993428.36, "orders": 4731, "margin_pct": 42.9}, {"category": "Risk", "revenue": 3689909, "profit": 1884768.12, "orders": 5631, "margin_pct": 51.08}, {"category": "Star", "revenue": 4477074, "profit": 2101411.13, "orders": 6943, "margin_pct": 46.94}], "cuis_data": [{"cuisine": "Italian", "revenue": 3288647, "profit": 1711674.71, "orders": 4794}, {"cuisine": "North Indian", "revenue": 2600297, "profit": 1130093.47, "orders": 4380}, {"cuisine": "Fast Food", "revenue": 2351725, "profit": 960301.38, "orders": 4274}, {"cuisine": "South Indian", "revenue": 1689975, "profit": 792338.49, "orders": 3332}, {"cuisine": "Chinese", "revenue": 1415964, "profit": 622878.61, "orders": 3549}, {"cuisine": "Street Food", "revenue": 1343239, "profit": 659184.28, "orders": 2514}, {"cuisine": "Continental", "revenue": 1126232, "profit": 589015.72, "orders": 2568}, {"cuisine": "Mexican", "revenue": 673615, "profit": 285777.93, "orders": 1240}], "city_data": [{"city": "Jaipur", "revenue": 1542194, "orders": 1297}, {"city": "Surat", "revenue": 1486754, "orders": 1264}, {"city": "Chennai", "revenue": 1480115, "orders": 1273}, {"city": "Ahmedabad", "revenue": 1472280, "orders": 1275}, {"city": "Mumbai", "revenue": 1461877, "orders": 1288}, {"city": "Kolkata", "revenue": 1445427, "orders": 1217}, {"city": "Delhi", "revenue": 1426368, "orders": 1200}, {"city": "Hyderabad", "revenue": 1411398, "orders": 1208}, {"city": "Bangalore", "revenue": 1382546, "orders": 1203}, {"city": "Pune", "revenue": 1380735, "orders": 1215}], "daily_data": [{"date": "2026-03-01", "revenue": 440830, "orders": 397, "profit": 203936.96}, {"date": "2026-03-02", "revenue": 485736, "orders": 421, "profit": 225508.03}, {"date": "2026-03-03", "revenue": 449040, "orders": 401, "profit": 210545.93}, {"date": "2026-03-04", "revenue": 482928, "orders": 405, "profit": 223822.12}, {"date": "2026-03-05", "revenue": 455552, "orders": 394, "profit": 211631.86}, {"date": "2026-03-06", "revenue": 517074, "orders": 418, "profit": 239781.74}, {"date": "2026-03-07", "revenue": 452547, "orders": 401, "profit": 210176.79}, {"date": "2026-03-08", "revenue": 476782, "orders": 411, "profit": 222790.51}, {"date": "2026-03-09", "revenue": 438839, "orders": 389, "profit": 204798.7}, {"date": "2026-03-10", "revenue": 492111, "orders": 407, "profit": 229223.08}, {"date": "2026-03-11", "revenue": 487981, "orders": 420, "profit": 228472.14}, {"date": "2026-03-12", "revenue": 455776, "orders": 382, "profit": 211425.52}, {"date": "2026-03-13", "revenue": 476008, "orders": 405, "profit": 222380.11}, {"date": "2026-03-14", "revenue": 507541, "orders": 426, "profit": 235175.4}, {"date": "2026-03-15", "revenue": 413557, "orders": 370, "profit": 192050.09}, {"date": "2026-03-16", "revenue": 433740, "orders": 375, "profit": 203256.08}, {"date": "2026-03-17", "revenue": 452125, "orders": 382, "profit": 212459.88}, {"date": "2026-03-18", "revenue": 455961, "orders": 396, "profit": 213295.0}, {"date": "2026-03-19", "revenue": 462505, "orders": 399, "profit": 215131.54}, {"date": "2026-03-20", "revenue": 479087, "orders": 418, "profit": 224685.07}, {"date": "2026-03-21", "revenue": 456847, "orders": 384, "profit": 215752.16}, {"date": "2026-03-22", "revenue": 501485, "orders": 410, "profit": 234353.85}, {"date": "2026-03-23", "revenue": 443760, "orders": 386, "profit": 207460.31}, {"date": "2026-03-24", "revenue": 501786, "orders": 410, "profit": 233678.87}, {"date": "2026-03-25", "revenue": 462460, "orders": 414, "profit": 214781.25}, {"date": "2026-03-26", "revenue": 428454, "orders": 387, "profit": 198357.58}, {"date": "2026-03-27", "revenue": 477877, "orders": 401, "profit": 220434.51}, {"date": "2026-03-28", "revenue": 503235, "orders": 429, "profit": 234691.18}, {"date": "2026-03-29", "revenue": 479284, "orders": 400, "profit": 222224.7}, {"date": "2026-03-30", "revenue": 439435, "orders": 387, "profit": 205624.12}, {"date": "2026-03-31", "revenue": 477829, "orders": 414, "profit": 222535.28}], "hourly_data": [{"hour": 0, "orders": 561, "revenue": 656506}, {"hour": 1, "orders": 500, "revenue": 562575}, {"hour": 2, "orders": 496, "revenue": 581295}, {"hour": 3, "orders": 498, "revenue": 589652}, {"hour": 4, "orders": 495, "revenue": 554120}, {"hour": 5, "orders": 505, "revenue": 560238}, {"hour": 6, "orders": 535, "revenue": 635754}, {"hour": 7, "orders": 512, "revenue": 620438}, {"hour": 8, "orders": 537, "revenue": 659310}, {"hour": 9, "orders": 530, "revenue": 616305}, {"hour": 10, "orders": 517, "revenue": 583133}, {"hour": 11, "orders": 511, "revenue": 616458}, {"hour": 12, "orders": 582, "revenue": 696171}, {"hour": 13, "orders": 500, "revenue": 573664}, {"hour": 14, "orders": 506, "revenue": 595686}, {"hour": 15, "orders": 498, "revenue": 569614}, {"hour": 16, "orders": 528, "revenue": 611136}, {"hour": 17, "orders": 515, "revenue": 608267}, {"hour": 18, "orders": 560, "revenue": 664043}, {"hour": 19, "orders": 508, "revenue": 596232}, {"hour": 20, "orders": 483, "revenue": 549379}, {"hour": 21, "orders": 510, "revenue": 593378}, {"hour": 22, "orders": 528, "revenue": 609269}, {"hour": 23, "orders": 525, "revenue": 587071}], "dow_data": [{"day": "Monday", "revenue": 2241510, "orders": 1958}, {"day": "Tuesday", "revenue": 2372891, "orders": 2014}, {"day": "Wednesday", "revenue": 1890852, "orders": 1636}, {"day": "Thursday", "revenue": 1802287, "orders": 1562}, {"day": "Friday", "revenue": 1950046, "orders": 1642}, {"day": "Saturday", "revenue": 1920170, "orders": 1640}, {"day": "Sunday", "revenue": 2311938, "orders": 1988}], "top_items_data": [{"food_name": "Veg Manchurian", "revenue": 904774, "profit": 533631.54, "orders": 1130, "rating": 4.87, "category": "Risk", "cuisine": "Italian", "avg_price": 391}, {"food_name": "Masala Dosa", "revenue": 865460, "profit": 421001.6, "orders": 1085, "rating": 3.67, "category": "Dog", "cuisine": "North Indian", "avg_price": 397}, {"food_name": "Veg Biryani", "revenue": 767820, "profit": 425718.0, "orders": 1020, "rating": 4.64, "category": "Risk", "cuisine": "Italian", "avg_price": 382}, {"food_name": "Veg Burger", "revenue": 654462, "profit": 341760.48, "orders": 1062, "rating": 4.78, "category": "Star", "cuisine": "Street Food", "avg_price": 309}, {"food_name": "Cold Coffee", "revenue": 629674, "profit": 189134.63, "orders": 1039, "rating": 4.18, "category": "Dog", "cuisine": "Fast Food", "avg_price": 298}, {"food_name": "Fries", "revenue": 504480, "profit": 175096.6, "orders": 1059, "rating": 4.65, "category": "Star", "cuisine": "North Indian", "avg_price": 240}, {"food_name": "Coke", "revenue": 473922, "profit": 221023.8, "orders": 1056, "rating": 4.68, "category": "Star", "cuisine": "Chinese", "avg_price": 226}, {"food_name": "Garlic Bread", "revenue": 436400, "profit": 208533.74, "orders": 1083, "rating": 4.83, "category": "Dog", "cuisine": "South Indian", "avg_price": 200}, {"food_name": "Paneer Pizza", "revenue": 324478, "profit": 191968.77, "orders": 1048, "rating": 3.92, "category": "Star", "cuisine": "Continental", "avg_price": 154}, {"food_name": "Lemon Soda", "revenue": 305877, "profit": 126928.26, "orders": 1063, "rating": 4.73, "category": "Hidden Star", "cuisine": "Chinese", "avg_price": 143}, {"food_name": "Falafel Wrap", "revenue": 246743, "profit": 110398.05, "orders": 363, "rating": 4.89, "category": "Hidden Star", "cuisine": "Continental", "avg_price": 349}, {"food_name": "Brownie", "revenue": 246553, "profit": 130573.94, "orders": 328, "rating": 4.62, "category": "Star", "cuisine": "Italian", "avg_price": 373}, {"food_name": "Mango Shake", "revenue": 244862, "profit": 135295.87, "orders": 319, "rating": 4.76, "category": "Star", "cuisine": "Italian", "avg_price": 382}, {"food_name": "Aloo Paratha", "revenue": 243165, "profit": 131186.55, "orders": 302, "rating": 4.48, "category": "Hidden Star", "cuisine": "Mexican", "avg_price": 377}, {"food_name": "Paneer Momos", "revenue": 239086, "profit": 109668.61, "orders": 353, "rating": 3.72, "category": "Risk", "cuisine": "North Indian", "avg_price": 346}, {"food_name": "Sweet Corn Soup", "revenue": 234980, "profit": 108313.99, "orders": 330, "rating": 4.09, "category": "Dog", "cuisine": "North Indian", "avg_price": 379}, {"food_name": "Corn Pizza", "revenue": 234601, "profit": 107699.81, "orders": 311, "rating": 4.74, "category": "Star", "cuisine": "South Indian", "avg_price": 379}, {"food_name": "Ice Cream Vanilla", "revenue": 231474, "profit": 98108.85, "orders": 337, "rating": 3.99, "category": "Risk", "cuisine": "Street Food", "avg_price": 346}, {"food_name": "Hot Chocolate", "revenue": 226352, "profit": 114994.04, "orders": 310, "rating": 4.19, "category": "Star", "cuisine": "South Indian", "avg_price": 376}, {"food_name": "Cheese Burger", "revenue": 224288, "profit": 79883.04, "orders": 330, "rating": 4.48, "category": "Hidden Star", "cuisine": "Fast Food", "avg_price": 344}], "bcg_data": [{"food_name": "Aloo Paratha", "category": "Hidden Star", "popularity": 302, "margin_pct": 53.95, "revenue": 243165, "rating": 4.48}, {"food_name": "Brownie", "category": "Star", "popularity": 328, "margin_pct": 52.96, "revenue": 246553, "rating": 4.62}, {"food_name": "Butter Naan", "category": "Dog", "popularity": 346, "margin_pct": 35.16, "revenue": 208544, "rating": 4.51}, {"food_name": "Cappuccino", "category": "Dog", "popularity": 341, "margin_pct": 31.0, "revenue": 143658, "rating": 4.57}, {"food_name": "Cheese Balls", "category": "Risk", "popularity": 304, "margin_pct": 58.48, "revenue": 111566, "rating": 4.78}, {"food_name": "Cheese Burger", "category": "Hidden Star", "popularity": 330, "margin_pct": 35.62, "revenue": 224288, "rating": 4.48}, {"food_name": "Chilli Paneer", "category": "Star", "popularity": 308, "margin_pct": 38.0, "revenue": 168466, "rating": 3.97}, {"food_name": "Coke", "category": "Star", "popularity": 1056, "margin_pct": 46.64, "revenue": 473922, "rating": 4.68}, {"food_name": "Cold Coffee", "category": "Dog", "popularity": 1039, "margin_pct": 30.04, "revenue": 629674, "rating": 4.18}, {"food_name": "Fries", "category": "Star", "popularity": 1059, "margin_pct": 34.71, "revenue": 504480, "rating": 4.65}, {"food_name": "Garlic Bread", "category": "Dog", "popularity": 1083, "margin_pct": 47.78, "revenue": 436400, "rating": 4.83}, {"food_name": "Hakka Noodles", "category": "Star", "popularity": 1108, "margin_pct": 43.32, "revenue": 181384, "rating": 4.24}, {"food_name": "Lemon Soda", "category": "Hidden Star", "popularity": 1063, "margin_pct": 41.5, "revenue": 305877, "rating": 4.73}, {"food_name": "Masala Dosa", "category": "Dog", "popularity": 1085, "margin_pct": 48.64, "revenue": 865460, "rating": 3.67}, {"food_name": "Paneer Pizza", "category": "Star", "popularity": 1048, "margin_pct": 59.16, "revenue": 324478, "rating": 3.92}, {"food_name": "Veg Biryani", "category": "Risk", "popularity": 1020, "margin_pct": 55.45, "revenue": 767820, "rating": 4.64}, {"food_name": "Veg Burger", "category": "Star", "popularity": 1062, "margin_pct": 52.22, "revenue": 654462, "rating": 4.78}, {"food_name": "Veg Manchurian", "category": "Risk", "popularity": 1130, "margin_pct": 58.98, "revenue": 904774, "rating": 4.87}, {"food_name": "Mango Shake", "category": "Star", "popularity": 319, "margin_pct": 55.25, "revenue": 244862, "rating": 4.76}, {"food_name": "Pasta Arrabiata", "category": "Risk", "popularity": 326, "margin_pct": 58.62, "revenue": 213750, "rating": 4.43}, {"food_name": "Falafel Wrap", "category": "Hidden Star", "popularity": 363, "margin_pct": 44.74, "revenue": 246743, "rating": 4.89}], "upsell_data": [{"food_name": "Fries", "avg_confidence": 0.821, "total_revenue": 504480, "orders": 1059}, {"food_name": "Veg Burger", "avg_confidence": 0.778, "total_revenue": 654462, "orders": 1062}, {"food_name": "Cold Coffee", "avg_confidence": 0.731, "total_revenue": 629674, "orders": 1039}, {"food_name": "Paneer Pizza", "avg_confidence": 0.729, "total_revenue": 324478, "orders": 1048}, {"food_name": "Hakka Noodles", "avg_confidence": 0.713, "total_revenue": 181384, "orders": 1108}, {"food_name": "Coke", "avg_confidence": 0.711, "total_revenue": 473922, "orders": 1056}, {"food_name": "Veg Biryani", "avg_confidence": 0.707, "total_revenue": 767820, "orders": 1020}, {"food_name": "Garlic Bread", "avg_confidence": 0.705, "total_revenue": 436400, "orders": 1083}, {"food_name": "Masala Dosa", "avg_confidence": 0.7, "total_revenue": 865460, "orders": 1085}, {"food_name": "Veg Manchurian", "avg_confidence": 0.699, "total_revenue": 904774, "orders": 1130}, {"food_name": "Lemon Soda", "avg_confidence": 0.678, "total_revenue": 305877, "orders": 1063}], "pairs_data": [{"pair": "Hakka Noodles + Veg Manchurian", "a": "Hakka Noodles", "b": "Veg Manchurian", "count": 790}, {"pair": "Garlic Bread + Paneer Pizza", "a": "Garlic Bread", "b": "Paneer Pizza", "count": 764}, {"pair": "Cold Coffee + Masala Dosa", "a": "Cold Coffee", "b": "Masala Dosa", "count": 760}, {"pair": "Coke + Veg Burger", "a": "Coke", "b": "Veg Burger", "count": 758}, {"pair": "Fries + Veg Burger", "a": "Fries", "b": "Veg Burger", "count": 757}, {"pair": "Coke + Fries", "a": "Coke", "b": "Fries", "count": 749}, {"pair": "Lemon Soda + Veg Biryani", "a": "Lemon Soda", "b": "Veg Biryani", "count": 721}], "margin_dist": {"Dog": [35.16, 31.0, 30.04, 58.63, 47.78, 35.64, 48.64, 40.55, 52.89, 57.67, 51.87, 39.35, 46.09, 58.21, 44.19, 46.58, 52.63], "Risk": [58.48, 50.0, 40.9, 38.03, 42.38, 44.04, 37.31, 45.87, 46.82, 58.62, 52.58, 55.45, 36.2, 58.98, 32.27, 47.76], "Star": [52.96, 38.0, 50.78, 46.64, 45.91, 38.01, 34.71, 43.32, 50.8, 36.03, 43.13, 55.25, 50.7, 33.07, 56.89, 40.17, 59.16, 58.5, 52.22], "Hidden Star": [53.95, 35.62, 48.9, 44.74, 42.11, 42.15, 41.5, 45.45, 50.29, 40.31, 42.52, 35.59, 32.63, 30.91, 54.3]}, "city_cat_data": [{"city": "Ahmedabad", "category": "Dog", "revenue": 392843}, {"city": "Ahmedabad", "category": "Hidden Star", "revenue": 231630}, {"city": "Ahmedabad", "category": "Risk", "revenue": 385715}, {"city": "Ahmedabad", "category": "Star", "revenue": 462092}, {"city": "Bangalore", "category": "Dog", "revenue": 373722}, {"city": "Bangalore", "category": "Hidden Star", "revenue": 231759}, {"city": "Bangalore", "category": "Risk", "revenue": 347503}, {"city": "Bangalore", "category": "Star", "revenue": 429562}, {"city": "Chennai", "category": "Dog", "revenue": 400740}, {"city": "Chennai", "category": "Hidden Star", "revenue": 235362}, {"city": "Chennai", "category": "Risk", "revenue": 368318}, {"city": "Chennai", "category": "Star", "revenue": 475695}, {"city": "Delhi", "category": "Dog", "revenue": 408507}, {"city": "Delhi", "category": "Hidden Star", "revenue": 221404}, {"city": "Delhi", "category": "Risk", "revenue": 373882}, {"city": "Delhi", "category": "Star", "revenue": 422575}, {"city": "Hyderabad", "category": "Dog", "revenue": 407491}, {"city": "Hyderabad", "category": "Hidden Star", "revenue": 235635}, {"city": "Hyderabad", "category": "Risk", "revenue": 325114}, {"city": "Hyderabad", "category": "Star", "revenue": 443158}, {"city": "Jaipur", "category": "Dog", "revenue": 436920}, {"city": "Jaipur", "category": "Hidden Star", "revenue": 253772}, {"city": "Jaipur", "category": "Risk", "revenue": 397222}, {"city": "Jaipur", "category": "Star", "revenue": 454280}, {"city": "Kolkata", "category": "Dog", "revenue": 415873}, {"city": "Kolkata", "category": "Hidden Star", "revenue": 218922}, {"city": "Kolkata", "category": "Risk", "revenue": 371172}, {"city": "Kolkata", "category": "Star", "revenue": 439460}, {"city": "Mumbai", "category": "Dog", "revenue": 389564}, {"city": "Mumbai", "category": "Hidden Star", "revenue": 216551}, {"city": "Mumbai", "category": "Risk", "revenue": 409802}, {"city": "Mumbai", "category": "Star", "revenue": 445960}, {"city": "Pune", "category": "Dog", "revenue": 369908}, {"city": "Pune", "category": "Hidden Star", "revenue": 220409}, {"city": "Pune", "category": "Risk", "revenue": 335650}, {"city": "Pune", "category": "Star", "revenue": 454768}, {"city": "Surat", "category": "Dog", "revenue": 411691}, {"city": "Surat", "category": "Hidden Star", "revenue": 250008}, {"city": "Surat", "category": "Risk", "revenue": 375531}, {"city": "Surat", "category": "Star", "revenue": 449524}]};
+
+// ══════════════════════════════════════════════════════════════════════
+// CHART DEFAULTS & HELPERS
+// ══════════════════════════════════════════════════════════════════════
+Chart.defaults.color = '#6270a0';
+Chart.defaults.borderColor = '#1d2035';
+Chart.defaults.font.family = "'DM Sans', sans-serif";
+
+const C = {
+  saffron:'#E85D04', saffron3:'#ff8c42', turmeric:'#FFD166',
+  teal:'#2dd4bf', blue:'#4f8ef7', grn:'#3ddc84', red:'#ff4f6e', pur:'#b57bff',
+  star:'#FFD166', hidden:'#2dd4bf', risk:'#ff4f6e', dog:'#b57bff',
+  mut:'#6270a0', txt:'#f0f0f8', card:'#151728'
+};
+
+function catColor(cat) {
+  return {Star:C.star,'Hidden Star':C.hidden,Risk:C.risk,Dog:C.dog}[cat]||C.saffron;
+}
+function fmtRev(v) {
+  if(v>=10000000) return '₹'+( v/10000000).toFixed(2)+'Cr';
+  if(v>=100000)   return '₹'+(v/100000).toFixed(1)+'L';
+  if(v>=1000)     return '₹'+(v/1000).toFixed(1)+'K';
+  return '₹'+v;
+}
+function fmtNum(v) {
+  if(v>=10000000) return (v/10000000).toFixed(2)+'Cr';
+  if(v>=100000)   return (v/100000).toFixed(1)+'L';
+  if(v>=1000)     return (v/1000).toFixed(1)+'K';
+  return v;
+}
+
+const tooltipPlugin = {
+  plugins:{
+    tooltip:{
+      backgroundColor:'#151728',
+      borderColor:'#252848',
+      borderWidth:1,
+      titleColor:'#f0f0f8',
+      bodyColor:'#6270a0',
+      padding:12,
+      cornerRadius:10,
+      displayColors:true
+    },
+    legend:{display:false}
+  }
+};
+
+// ══════════════════════════════════════════════════════════════════════
+// CHART REGISTRY
+// ══════════════════════════════════════════════════════════════════════
+const charts = {};
+
+function mkChart(id, type, data, options={}) {
+  if(charts[id]) { charts[id].destroy(); }
+  const ctx = document.getElementById(id);
+  if(!ctx) return;
+  charts[id] = new Chart(ctx, {type, data, options: {
+    responsive:true, maintainAspectRatio:false,
+    ...tooltipPlugin,
+    ...options,
+    plugins:{...tooltipPlugin.plugins, ...(options.plugins||{})}
+  }});
+  return charts[id];
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// FILTER STATE
+// ══════════════════════════════════════════════════════════════════════
+let state = {city:'all', cat:'all', cuisine:'all', daterange:'all', metric:'revenue'};
+let trendMode = 'revenue';
+let catChartMode = 'revenue';
+let tblSortKey = 'revenue';
+let tblSortDir = -1;
+
+// ══════════════════════════════════════════════════════════════════════
+// POPULATE FILTERS
+// ══════════════════════════════════════════════════════════════════════
+function populateFilters() {
+  const cuisEl = document.getElementById('f-cuisine');
+  RAW.cuis_data.forEach(d => {
+    const o = document.createElement('option');
+    o.value = d.cuisine; o.textContent = d.cuisine;
+    cuisEl.appendChild(o);
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// FILTER DAILY DATA BY RANGE
+// ══════════════════════════════════════════════════════════════════════
+function getFilteredDaily() {
+  let data = RAW.daily_data;
+  if(state.daterange === 'week1') data = data.filter(d => d.date >= '2026-03-01' && d.date <= '2026-03-07');
+  else if(state.daterange === 'week2') data = data.filter(d => d.date >= '2026-03-08' && d.date <= '2026-03-14');
+  else if(state.daterange === 'week3') data = data.filter(d => d.date >= '2026-03-15' && d.date <= '2026-03-21');
+  else if(state.daterange === 'week4') data = data.filter(d => d.date >= '2026-03-22' && d.date <= '2026-03-31');
+  return data;
+}
+
+function getFilterMultiplier() {
+  // Simulate city/cat/cuisine filtering by applying a proportional factor
+  let factor = 1;
+  if(state.cat !== 'all') {
+    const catRev = RAW.cat_data.find(c=>c.category===state.cat);
+    if(catRev) factor *= catRev.revenue / RAW.kpis.total_revenue;
+    else factor *= 0.25;
+  }
+  if(state.cuisine !== 'all') {
+    const cuisRev = RAW.cuis_data.find(c=>c.cuisine===state.cuisine);
+    if(cuisRev) factor *= cuisRev.revenue / RAW.kpis.total_revenue;
+    else factor *= 0.12;
+  }
+  return factor;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// UPDATE KPIs
+// ══════════════════════════════════════════════════════════════════════
+function updateKPIs() {
+  const daily = getFilteredDaily();
+  const f = getFilterMultiplier();
+  const rev = Math.round(daily.reduce((s,d)=>s+d.revenue,0) * (state.cat!=='all'||state.cuisine!=='all'?f:1));
+  const prof = Math.round(daily.reduce((s,d)=>s+d.profit,0) * (state.cat!=='all'||state.cuisine!=='all'?f:1));
+  const ord = Math.round(daily.reduce((s,d)=>s+d.orders,0) * (state.cat!=='all'||state.cuisine!=='all'?f:1));
+  const baseRev = state.cat!=='all'||state.cuisine!=='all'?rev:RAW.kpis.total_revenue;
+  const baseProf = state.cat!=='all'||state.cuisine!=='all'?prof:RAW.kpis.total_profit;
+  const baseOrd = state.cat!=='all'||state.cuisine!=='all'?ord:RAW.kpis.total_orders;
+
+  document.getElementById('k-revenue').textContent = fmtRev(baseRev);
+  document.getElementById('k-profit').textContent = fmtRev(baseProf);
+  document.getElementById('k-orders').textContent = baseOrd.toLocaleString('en-IN');
+  const aov = baseOrd>0?Math.round(baseRev/baseOrd*3.1):RAW.kpis.aov;
+  document.getElementById('k-aov').textContent = '₹'+Math.round(RAW.kpis.aov).toLocaleString('en-IN');
+  const marg = baseRev>0?(baseProf/baseRev*100).toFixed(1):RAW.kpis.profit_margin;
+  document.getElementById('k-margin').textContent = marg+'%';
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// TREND CHART
+// ══════════════════════════════════════════════════════════════════════
+function buildTrend() {
+  const daily = getFilteredDaily();
+  const labels = daily.map(d => d.date.slice(5));
+  const key = trendMode;
+  const vals = daily.map(d => d[key]);
+  const grad = charts['c-trend']?.ctx || document.getElementById('c-trend').getContext('2d');
+  const gradient = grad.createLinearGradient(0,0,0,240);
+  gradient.addColorStop(0, 'rgba(232,93,4,0.35)');
+  gradient.addColorStop(1, 'rgba(232,93,4,0.0)');
+
+  mkChart('c-trend','line',{
+    labels,
+    datasets:[{
+      label: key.charAt(0).toUpperCase()+key.slice(1),
+      data: vals,
+      borderColor: C.saffron,
+      backgroundColor: gradient,
+      borderWidth: 2.5,
+      pointRadius: 0,
+      pointHoverRadius: 5,
+      fill: true,
+      tension: 0.4
+    }]
+  },{
+    scales:{
+      x:{grid:{display:false},ticks:{font:{size:9},maxTicksLimit:10}},
+      y:{grid:{color:'#1d2035'},ticks:{font:{size:9},callback:v=>key==='orders'?v:fmtRev(v)}}
+    },
+    plugins:{tooltip:{callbacks:{label:ctx=>key==='orders'?ctx.parsed.y+' orders':fmtRev(ctx.parsed.y)}}}
+  });
+}
+
+function switchTrend(mode, btn) {
+  trendMode = mode;
+  document.querySelectorAll('.tab-btn').forEach(b=>{
+    if(b.closest('.chart-card')===btn.closest('.chart-card')) b.classList.remove('active');
+  });
+  btn.classList.add('active');
+  buildTrend();
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// HOURLY CHART
+// ══════════════════════════════════════════════════════════════════════
+function buildHourly() {
+  const labels = RAW.hourly_data.map(d=>{
+    const h = d.hour;
+    return h===0?'12am':h<12?h+'am':h===12?'12pm':(h-12)+'pm';
+  });
+  const vals = RAW.hourly_data.map(d=>d.orders);
+  const maxVal = Math.max(...vals);
+  const colors = vals.map(v=>{
+    const intensity = v/maxVal;
+    return `rgba(232,93,4,${0.2+intensity*0.8})`;
+  });
+  mkChart('c-hourly','bar',{
+    labels,
+    datasets:[{label:'Orders',data:vals,backgroundColor:colors,borderRadius:4,borderSkipped:false}]
+  },{
+    scales:{
+      x:{grid:{display:false},ticks:{font:{size:8},maxTicksLimit:12}},
+      y:{grid:{color:'#1d2035'},ticks:{font:{size:9}}}
+    },
+    plugins:{tooltip:{callbacks:{label:ctx=>ctx.parsed.y+' orders'}}}
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// BCG BUBBLE
+// ══════════════════════════════════════════════════════════════════════
+function buildBCG() {
+  const catMap = {'Star':C.star,'Hidden Star':C.hidden,'Risk':C.risk,'Dog':C.dog};
+  const datasets = ['Star','Hidden Star','Risk','Dog'].map(cat=>{
+    const items = RAW.bcg_data.filter(d=>d.category===cat);
+    return {
+      label:cat,
+      data:items.map(d=>({x:d.popularity,y:d.margin_pct,r:Math.max(6,Math.sqrt(d.revenue/2000)),name:d.food_name})),
+      backgroundColor:catColor(cat)+'88',
+      borderColor:catColor(cat),
+      borderWidth:1.5
+    };
+  });
+  mkChart('c-bcg','bubble',{datasets},{
+    scales:{
+      x:{title:{display:true,text:'Popularity (Orders)',color:C.mut,font:{size:10}},grid:{color:'#1d2035'},ticks:{font:{size:9}}},
+      y:{title:{display:true,text:'Margin %',color:C.mut,font:{size:10}},grid:{color:'#1d2035'},ticks:{font:{size:9},callback:v=>v+'%'}}
+    },
+    plugins:{
+      legend:{display:true,position:'top',labels:{color:C.mut,font:{size:10},boxWidth:10,padding:12}},
+      tooltip:{callbacks:{label:ctx=>`${ctx.raw.name}: ${ctx.raw.x} orders, ${ctx.raw.y}% margin`}}
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// CATEGORY CHART
+// ══════════════════════════════════════════════════════════════════════
+function buildCatChart() {
+  const data = RAW.cat_data;
+  const labels = data.map(d=>d.category);
+  const vals = data.map(d=> catChartMode==='revenue'?d.revenue : catChartMode==='orders'?d.orders : d.margin_pct);
+  const colors = data.map(d=>catColor(d.category));
+  mkChart('c-cat','doughnut',{
+    labels,
+    datasets:[{data:vals,backgroundColor:colors.map(c=>c+'99'),borderColor:colors,borderWidth:2,hoverOffset:8}]
+  },{
+    cutout:'65%',
+    plugins:{
+      legend:{display:true,position:'bottom',labels:{color:C.mut,font:{size:10},boxWidth:10,padding:10}},
+      tooltip:{callbacks:{label:ctx=>{
+        const lbl = catChartMode==='revenue'?fmtRev(ctx.parsed) : catChartMode==='orders'?ctx.parsed+' orders' : ctx.parsed+'%';
+        return ` ${ctx.label}: ${lbl}`;
+      }}}
+    }
+  });
+}
+
+function switchCatChart(mode, btn) {
+  catChartMode = mode;
+  const btns = btn.closest('.tab-group').querySelectorAll('.tab-btn');
+  btns.forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  buildCatChart();
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// CUISINE CHART
+// ══════════════════════════════════════════════════════════════════════
+function buildCuisine() {
+  const data = RAW.cuis_data;
+  const labels = data.map(d=>d.cuisine);
+  const revVals = data.map(d=>d.revenue);
+  const profVals = data.map(d=>d.profit);
+  mkChart('c-cuisine','bar',{
+    labels,
+    datasets:[
+      {label:'Revenue',data:revVals,backgroundColor:C.saffron+'99',borderColor:C.saffron,borderWidth:1.5,borderRadius:6,borderSkipped:false},
+      {label:'Profit',data:profVals,backgroundColor:C.teal+'88',borderColor:C.teal,borderWidth:1.5,borderRadius:6,borderSkipped:false}
+    ]
+  },{
+    scales:{
+      x:{grid:{display:false},ticks:{font:{size:9}}},
+      y:{grid:{color:'#1d2035'},ticks:{font:{size:9},callback:v=>fmtRev(v)}}
+    },
+    plugins:{
+      legend:{display:true,position:'top',labels:{color:C.mut,font:{size:10},boxWidth:10}},
+      tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ${fmtRev(ctx.parsed.y)}`}}
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// DAY OF WEEK
+// ══════════════════════════════════════════════════════════════════════
+function buildDOW() {
+  const data = RAW.dow_data;
+  const labels = data.map(d=>d.day.slice(0,3));
+  const vals = data.map(d=>d.revenue);
+  const maxV = Math.max(...vals);
+  const colors = vals.map(v=>`rgba(255,209,102,${0.3+0.7*v/maxV})`);
+  mkChart('c-dow','bar',{
+    labels,
+    datasets:[{
+      label:'Revenue',data:vals,backgroundColor:colors,
+      borderColor:vals.map(v=>v===maxV?C.turmeric:'transparent'),
+      borderWidth:2,borderRadius:8,borderSkipped:false
+    }]
+  },{
+    scales:{
+      x:{grid:{display:false},ticks:{font:{size:10,weight:'600'},color:C.txt}},
+      y:{grid:{color:'#1d2035'},ticks:{font:{size:9},callback:v=>fmtRev(v)}}
+    },
+    plugins:{tooltip:{callbacks:{label:ctx=>fmtRev(ctx.parsed.y)}}}
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// CITY CHART
+// ══════════════════════════════════════════════════════════════════════
+
+// ══════════════════════════════════════════════════════════════════════
+// MARGIN DISTRIBUTION (Box-like using bar)
+// ══════════════════════════════════════════════════════════════════════
+function buildMargin() {
+  const cats = Object.keys(RAW.margin_dist);
+  const colors = cats.map(c=>catColor(c));
+  const datasets = cats.map((cat,i)=>{
+    const vals = RAW.margin_dist[cat].sort((a,b)=>a-b);
+    const bins = [25,30,35,40,45,50,55,60,65];
+    const counts = bins.map((b,bi)=> vals.filter(v=>v>=b&&v<(bins[bi+1]||70)).length);
+    return {
+      label:cat, data:counts,
+      backgroundColor:colors[i]+'77',
+      borderColor:colors[i],
+      borderWidth:1.5, borderRadius:4, borderSkipped:false
+    };
+  });
+  mkChart('c-margin','bar',{
+    labels:['25-30%','30-35%','35-40%','40-45%','45-50%','50-55%','55-60%','60-65%'],
+    datasets
+  },{
+    scales:{
+      x:{grid:{display:false},ticks:{font:{size:9}}},
+      y:{grid:{color:'#1d2035'},ticks:{font:{size:9}},title:{display:true,text:'# Items',color:C.mut,font:{size:9}}}
+    },
+    plugins:{
+      legend:{display:true,position:'top',labels:{color:C.mut,font:{size:10},boxWidth:10}},
+      tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ${ctx.parsed.y} items`}}
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// HEATMAP
+// ══════════════════════════════════════════════════════════════════════
+
+// ══════════════════════════════════════════════════════════════════════
+// RATING vs PROFIT SCATTER
+// ══════════════════════════════════════════════════════════════════════
+function buildRatingProfit() {
+  const cats = ['Star','Hidden Star','Risk','Dog'];
+  const datasets = cats.map(cat => {
+    const items = RAW.top_items_data.filter(d=>d.category===cat);
+    return {
+      label: cat,
+      data: items.map(d=>({x: d.rating, y: Math.round(d.profit/1000), r: Math.max(5, Math.sqrt(d.revenue/15000)), name: d.food_name})),
+      backgroundColor: catColor(cat)+'88',
+      borderColor: catColor(cat),
+      borderWidth: 1.5
+    };
+  });
+  mkChart('c-rating-profit','bubble',{datasets},{
+    scales:{
+      x:{min:3.4,max:5.1,title:{display:true,text:'Customer Rating',color:C.mut,font:{size:10}},grid:{color:'#1d2035'},ticks:{font:{size:9},callback:v=>v+'★'}},
+      y:{title:{display:true,text:'Profit (₹K)',color:C.mut,font:{size:10}},grid:{color:'#1d2035'},ticks:{font:{size:9},callback:v=>v+'K'}}
+    },
+    plugins:{
+      legend:{display:true,position:'top',labels:{color:C.mut,font:{size:10},boxWidth:10,padding:10}},
+      tooltip:{callbacks:{label:ctx=>`${ctx.raw.name}: ⭐${ctx.raw.x} · ₹${ctx.raw.y}K profit`}}
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// TOP 10 ITEMS BY PROFIT — GROUPED BAR (Profit + Margin %)
+// ══════════════════════════════════════════════════════════════════════
+function buildTopProfit() {
+  const data = [...RAW.top_items_data].sort((a,b)=>b.profit-a.profit).slice(0,10);
+  const labels = data.map(d=>d.food_name);
+  const profitVals = data.map(d=>Math.round(d.profit/1000));
+  const marginVals = data.map(d=>parseFloat((d.profit/d.revenue*100).toFixed(1)));
+  const colors = data.map(d=>catColor(d.category));
+  mkChart('c-top-profit','bar',{
+    labels,
+    datasets:[
+      {
+        label:'Profit (₹K)', data:profitVals, yAxisID:'y',
+        backgroundColor:colors.map(c=>c+'88'),borderColor:colors,
+        borderWidth:1.5,borderRadius:6,borderSkipped:false
+      },
+      {
+        label:'Margin %', data:marginVals, yAxisID:'y2', type:'line',
+        borderColor:C.turmeric,backgroundColor:'transparent',
+        borderWidth:2.5,pointRadius:5,pointBackgroundColor:C.turmeric,
+        pointBorderColor:'#07080f',pointBorderWidth:2,tension:0.3
+      }
+    ]
+  },{
+    scales:{
+      x:{grid:{display:false},ticks:{font:{size:9},maxRotation:30}},
+      y:{grid:{color:'#1d2035'},ticks:{font:{size:9},callback:v=>v+'K'},title:{display:true,text:'Profit ₹K',color:C.mut,font:{size:9}}},
+      y2:{position:'right',grid:{display:false},ticks:{font:{size:9},callback:v=>v+'%'},title:{display:true,text:'Margin %',color:C.turmeric,font:{size:9}},min:0,max:80}
+    },
+    plugins:{
+      legend:{display:true,position:'top',labels:{color:C.mut,font:{size:10},boxWidth:10,padding:10}},
+      tooltip:{callbacks:{label:ctx=>ctx.dataset.yAxisID==='y2'?` Margin: ${ctx.parsed.y}%`:` Profit: ₹${ctx.parsed.y}K`}}
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// UPSELL CARDS
+// ══════════════════════════════════════════════════════════════════════
+function buildUpsellCards() {
+  const wrap = document.getElementById('upsell-cards');
+  const confColors = [C.saffron, C.saffron3, C.turmeric, C.teal, C.blue, C.grn];
+  wrap.innerHTML = RAW.upsell_data.map((d,i)=>`
+    <div class="upsell-card">
+      <div class="uc-name">${d.food_name}</div>
+      <div class="uc-conf" style="color:${confColors[i%confColors.length]}">${(d.avg_confidence*100).toFixed(1)}%</div>
+      <div class="uc-sub">UPSELL CONFIDENCE</div>
+      <div style="font-size:10px;color:var(--mut);margin-top:6px">${d.orders.toLocaleString('en-IN')} orders · ${fmtRev(d.total_revenue)}</div>
+      <div class="conf-bar"><div class="conf-fill" style="width:${d.avg_confidence*100}%;background:${confColors[i%confColors.length]}"></div></div>
+    </div>
+  `).join('');
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// PAIRS CHART
+// ══════════════════════════════════════════════════════════════════════
+function buildPairs() {
+  const data = RAW.pairs_data.slice(0,7);
+  const labels = data.map(d=>d.pair);
+  const vals = data.map(d=>d.count);
+  const colors = [C.saffron,C.turmeric,C.teal,C.blue,C.grn,C.pur,C.red];
+  mkChart('c-pairs','bar',{
+    labels,
+    datasets:[{
+      label:'Co-occurrences', data:vals,
+      backgroundColor:colors.map(c=>c+'88'),
+      borderColor:colors,
+      borderWidth:1.5, borderRadius:6, borderSkipped:false
+    }]
+  },{
+    indexAxis:'y',
+    scales:{
+      x:{grid:{color:'#1d2035'},ticks:{font:{size:9}}},
+      y:{grid:{display:false},ticks:{font:{size:9},color:C.txt,maxTicksLimit:10}}
+    },
+    plugins:{
+      tooltip:{callbacks:{label:ctx=>` ${ctx.parsed.x} orders together`}},
+      legend:{display:false}
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// TABLE
+// ══════════════════════════════════════════════════════════════════════
+let tableData = [...RAW.top_items_data];
+
+function renderTable() {
+  const search = document.getElementById('tbl-search').value.toLowerCase();
+  const catFilter = document.getElementById('tbl-cat').value;
+  let data = tableData.filter(d=>{
+    const matchSearch = !search || d.food_name.toLowerCase().includes(search)||d.cuisine.toLowerCase().includes(search);
+    const matchCat = catFilter==='all'||d.category===catFilter;
+    return matchSearch&&matchCat;
+  });
+  data.sort((a,b)=>(a[tblSortKey]<b[tblSortKey]?-1:1)*tblSortDir);
+  const maxRev = Math.max(...data.map(d=>d.revenue));
+
+  document.getElementById('tbl-body').innerHTML = data.map((d,i)=>{
+    const mc = d.revenue/d.profit*100>50?'margin-green':d.revenue/d.profit*100>35?'margin-amber':'margin-red';
+    const profPct = (d.profit/d.revenue*100).toFixed(1);
+    return `<tr>
+      <td><span style="color:var(--mut);font-size:10px;margin-right:6px">${String(i+1).padStart(2,'0')}</span>${d.food_name}</td>
+      <td><span class="bcg-badge bcg-${d.category.toLowerCase().replace(' ','-')}">${d.category}</span></td>
+      <td class="td-mono">${fmtRev(d.revenue)}<div class="bar-mini"><div class="bar-fill" style="width:${(d.revenue/maxRev*100).toFixed(1)}%"></div></div></td>
+      <td class="td-mono ${profPct>50?'margin-green':profPct>35?'margin-amber':'margin-red'}">${fmtRev(d.profit)} <span style="font-size:9px;opacity:.6">(${profPct}%)</span></td>
+      <td class="td-mono">${d.orders.toLocaleString('en-IN')}</td>
+      <td class="td-mono">₹${d.avg_price}</td>
+      <td><span class="stars">${'★'.repeat(Math.round(d.rating))}${'☆'.repeat(5-Math.round(d.rating))}</span> <span style="font-size:10px;color:var(--mut)">${d.rating}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterTable() { renderTable(); }
+
+function sortTable(key) {
+  if(tblSortKey===key) tblSortDir*=-1;
+  else { tblSortKey=key; tblSortDir=-1; }
+  renderTable();
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// AI INSIGHTS
+// ══════════════════════════════════════════════════════════════════════
+function buildInsights() {
+  const insights = [
+    {tag:'High Priority',cls:'tag-high',title:'🚀 Promote Veg Manchurian',body:'Risk category with 58.98% margin & 4.87 rating. Increase visibility to convert it into a Star — highest revenue item at ₹9L.'},
+    {tag:'High Priority',cls:'tag-high',title:'⚡ Upsell Fries (82% confidence)',body:'Fries has the highest AI upsell confidence at 82.1%. Pair it with Veg Burger in combos — they co-occur 757 times.'},
+    {tag:'Medium Priority',cls:'tag-med',title:'💎 Hidden Stars Need Promotion',body:'Lemon Soda, Falafel Wrap & Aloo Paratha are Hidden Stars with great margins (41–54%). Increase digital menu placement.'},
+    {tag:'Medium Priority',cls:'tag-med',title:'📅 Boost Tuesday Orders',body:'Tuesday is the highest revenue day (₹23.7L). Saturday–Sunday also strong. Wednesday–Thursday need targeted promotions.'},
+    {tag:'Medium Priority',cls:'tag-med',title:'🍕 Italian Cuisine Dominates',body:'Italian cuisine leads with ₹32.9L revenue (22.7% share) and 52% profit margin. Expand Italian menu offerings.'},
+    {tag:'Low Priority',cls:'tag-low',title:'🕛 Peak Hours: 12pm & 6pm',body:'Orders spike at noon (582 orders) and 6pm (560 orders). Consider dynamic pricing and flash offers during these windows.'},
+    {tag:'High Priority',cls:'tag-high',title:'🐾 Cold Coffee is a Dog',body:'Cold Coffee has only 30% margin despite 1039 orders. Revise pricing strategy or replace with higher-margin beverage alternatives.'},
+    {tag:'Low Priority',cls:'tag-low',title:'🏙️ Jaipur Leads Revenue',body:'Jaipur tops city revenue at ₹15.4L. Pune & Bangalore slightly lag — targeted city campaigns could improve their performance.'},
+    {tag:'Medium Priority',cls:'tag-med',title:'🔗 Garlic Bread + Paneer Pizza',body:'Top meal combo with 764 co-orders. Bundle at ₹280–320 as a "Pizza Night" combo to boost average order value.'},
+  ];
+  document.getElementById('insight-row').innerHTML = insights.map(ins=>`
+    <div class="insight-card">
+      <div class="insight-tag ${ins.cls}">${ins.tag}</div>
+      <div class="insight-title">${ins.title}</div>
+      <div class="insight-body">${ins.body}</div>
+    </div>
+  `).join('');
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// APPLY FILTERS
+// ══════════════════════════════════════════════════════════════════════
+function applyFilters() {
+  state.cat = document.getElementById('f-cat').value;
+  state.cuisine = document.getElementById('f-cuisine').value;
+  state.daterange = document.getElementById('f-daterange').value;
+  state.metric = document.getElementById('f-metric').value;
+  updateKPIs();
+  buildTrend();
+}
+
+function resetFilters() {
+  state = {cat:'all',cuisine:'all',daterange:'all',metric:'revenue'};
+  document.getElementById('f-cat').value = 'all';
+  document.getElementById('f-cuisine').value = 'all';
+  document.getElementById('f-daterange').value = 'all';
+  document.getElementById('f-metric').value = 'revenue';
+  updateKPIs();
+  buildTrend();
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// LIVE CLOCK
+// ══════════════════════════════════════════════════════════════════════
+function updateClock() {
+  const now = new Date();
+  document.getElementById('live-time').textContent =
+    now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ══════════════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  populateFilters();
+  updateKPIs();
+  buildTrend();
+  buildHourly();
+  buildCatChart();
+  buildCuisine();
+  buildDOW();
+  buildRatingProfit();
+  buildMargin();
+  buildTopProfit();
+  buildUpsellCards();
+  buildPairs();
+  renderTable();
+  buildInsights();
+});
+</script>
+</body>
+</html>

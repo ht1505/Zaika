@@ -1,0 +1,235 @@
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* ZAIKA Color Tokens */
+  --saffron: #E85D04;
+  --saffron-light: #FB8500;
+  --saffron-dark: #C04B00;
+  --turmeric: #FFD166;
+  --forest: #1B4332;
+  --cream: #FFF8F0;
+  --cream-dark: #F5E6D3;
+  --charcoal: #1A1A2E;
+  
+  /* BCG Colors */
+  --bcg-star: #F59E0B;
+  --bcg-hidden-star: #8B5CF6;
+  --bcg-workhorse: #3B82F6;
+  --bcg-dog: #9CA3AF;
+  
+  /* Semantic Colors */
+  --success: #10B981;
+  --warning: #F59E0B;
+  --error: #EF4444;
+  
+  /* Typography */
+  --font-heading: 'Playfair Display', serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  
+  /* Spacing Scale (4px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  
+  /* Border Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+  
+  /* Shadows */
+  --shadow-card: 0 2px 16px rgba(0, 0, 0, 0.06);
+  --shadow-warm: 0 4px 24px rgba(232, 93, 4, 0.18);
+  
+  /* Standard theme colors */
+  --font-size: 16px;
+  --background: var(--cream);
+  --foreground: var(--charcoal);
+  --card: #ffffff;
+  --card-foreground: var(--charcoal);
+  --popover: #ffffff;
+  --popover-foreground: var(--charcoal);
+  --primary: var(--saffron);
+  --primary-foreground: #ffffff;
+  --secondary: #ffffff;
+  --secondary-foreground: var(--saffron);
+  --muted: var(--cream-dark);
+  --muted-foreground: #666666;
+  --accent: var(--turmeric);
+  --accent-foreground: var(--charcoal);
+  --destructive: var(--error);
+  --destructive-foreground: #ffffff;
+  --border: var(--cream-dark);
+  --input: transparent;
+  --input-background: #ffffff;
+  --switch-background: #cbced4;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: var(--saffron);
+}
+
+@theme inline {
+  --color-saffron: var(--saffron);
+  --color-saffron-light: var(--saffron-light);
+  --color-saffron-dark: var(--saffron-dark);
+  --color-turmeric: var(--turmeric);
+  --color-forest: var(--forest);
+  --color-cream: var(--cream);
+  --color-cream-dark: var(--cream-dark);
+  --color-charcoal: var(--charcoal);
+  --color-bcg-star: var(--bcg-star);
+  --color-bcg-hidden-star: var(--bcg-hidden-star);
+  --color-bcg-workhorse: var(--bcg-workhorse);
+  --color-bcg-dog: var(--bcg-dog);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+  }
+
+  html {
+    font-size: var(--font-size);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  label {
+    font-size: 1rem;
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  button {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  input, textarea {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
+  }
+
+  .font-mono {
+    font-family: var(--font-mono);
+  }
+}
+
+/* Custom animations */
+@layer utilities {
+  @keyframes ripple {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(2);
+      opacity: 0;
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  @keyframes wave {
+    0%, 100% {
+      height: 20%;
+    }
+    50% {
+      height: 100%;
+    }
+  }
+
+  .animate-ripple {
+    animation: ripple 1.5s ease-out infinite;
+  }
+
+  .animate-shimmer {
+    animation: shimmer 1.5s linear infinite;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(232, 93, 4, 0.1),
+      transparent
+    );
+    background-size: 200% 100%;
+  }
+
+  .animate-wave {
+    animation: wave 1s ease-in-out infinite;
+  }
+}

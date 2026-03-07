@@ -1,0 +1,160 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:opsz,wght@9..144,400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── CSS Variables ─────────────────────────────────────────────────────────── */
+:root {
+  --saffron:      #e85d04;
+  --saffron-dark: #c44d03;
+  --turmeric:     #ffd166;
+  --cream:        #fff8f0;
+  --charcoal:     #1a1a2e;
+
+  /* Light mode surfaces */
+  --bg:           #fff8f0;
+  --bg-card:      #ffffff;
+  --bg-subtle:    #fff3e8;
+  --border:       #ffe4cc;
+  --text-primary: #1a1a2e;
+  --text-muted:   #6b7280;
+  --text-faint:   #9ca3af;
+  --header-bg:    rgba(255,248,240,0.92);
+  --input-bg:     #ffffff;
+  --chat-ai-bg:   #ffffff;
+  --chat-ai-border: #ffe4cc;
+}
+
+/* ── Dark mode ──────────────────────────────────────────────────────────────── */
+.dark {
+  --bg:           #0f0f14;
+  --bg-card:      #1a1a24;
+  --bg-subtle:    #22222e;
+  --border:       #2e2e3e;
+  --text-primary: #f5f0ff;
+  --text-muted:   #a0a0b8;
+  --text-faint:   #606078;
+  --header-bg:    rgba(15,15,20,0.92);
+  --input-bg:     #22222e;
+  --chat-ai-bg:   #1a1a24;
+  --chat-ai-border: #2e2e3e;
+  --cream:        #0f0f14;
+  --charcoal:     #f5f0ff;
+}
+
+/* ── Base ───────────────────────────────────────────────────────────────────── */
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  background-color: var(--bg);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #e85d0440; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #e85d04; }
+
+/* ── Tailwind components ────────────────────────────────────────────────────── */
+@layer components {
+
+  .btn-primary {
+    @apply bg-saffron text-white font-semibold px-6 py-3 rounded-xl
+           shadow-warm hover:bg-orange-600 active:scale-95 transition-all duration-150;
+  }
+
+  .btn-secondary {
+    @apply bg-transparent border border-saffron text-saffron font-semibold px-6 py-3 rounded-xl
+           hover:bg-orange-50 dark:hover:bg-orange-950 active:scale-95 transition-all duration-150;
+  }
+
+  .btn-ghost {
+    @apply text-saffron font-medium px-4 py-2 rounded-lg
+           hover:bg-orange-50 dark:hover:bg-orange-950/30 active:scale-95 transition-all duration-150;
+  }
+
+  /* Card uses CSS vars so it auto-switches in dark mode */
+  .card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    @apply rounded-2xl shadow-card overflow-hidden;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  /* Customer-only BCG badges (renamed for customer view) */
+  .badge-star      { @apply bg-amber-100 text-amber-800 text-xs font-semibold px-2 py-0.5 rounded-full; }
+  .badge-hidden    { @apply bg-emerald-100 text-emerald-800 text-xs font-semibold px-2 py-0.5 rounded-full; }
+  .badge-workhorse { @apply bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-0.5 rounded-full; }
+  .badge-dog       { @apply bg-gray-100 text-gray-600 text-xs font-semibold px-2 py-0.5 rounded-full; }
+
+  .dark .badge-star      { @apply bg-amber-900/40 text-amber-300; }
+  .dark .badge-hidden    { @apply bg-emerald-900/40 text-emerald-300; }
+  .dark .badge-workhorse { @apply bg-blue-900/40 text-blue-300; }
+  .dark .badge-dog       { @apply bg-gray-800 text-gray-400; }
+
+  .input {
+    width: 100%;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    @apply rounded-xl px-4 py-3 text-sm
+           focus:outline-none focus:ring-2 focus:ring-saffron/30 focus:border-saffron
+           placeholder-gray-400 transition-all;
+  }
+}
+
+/* ── BCG Matrix dot ─────────────────────────────────────────────────────────── */
+.bcg-dot { width:8px; height:8px; border-radius:50%; display:inline-block; flex-shrink:0; }
+.bcg-dot.star        { background:#f59e0b; }
+.bcg-dot.hidden_star { background:#8b5cf6; }
+.bcg-dot.workhorse   { background:#3b82f6; }
+.bcg-dot.dog         { background:#9ca3af; }
+
+/* ── Chat bubbles ───────────────────────────────────────────────────────────── */
+.chat-bubble-user {
+  @apply bg-saffron text-white rounded-2xl rounded-br-sm px-4 py-2.5 max-w-xs text-sm;
+}
+.chat-bubble-ai {
+  background-color: var(--chat-ai-bg);
+  border: 1px solid var(--chat-ai-border);
+  color: var(--text-primary);
+  @apply rounded-2xl rounded-bl-sm px-4 py-2.5 max-w-sm text-sm shadow-sm;
+}
+
+/* ── Markdown rendering inside chat bubbles ─────────────────────────────────── */
+.chat-bubble-ai strong,
+.chat-bubble-ai b    { font-weight: 700; color: var(--text-primary); }
+.chat-bubble-ai em,
+.chat-bubble-ai i    { font-style: italic; }
+.chat-bubble-ai ul   { list-style: disc; padding-left: 1.2rem; margin: 0.4rem 0; }
+.chat-bubble-ai ol   { list-style: decimal; padding-left: 1.2rem; margin: 0.4rem 0; }
+.chat-bubble-ai li   { margin: 0.15rem 0; }
+.chat-bubble-ai p    { margin: 0.3rem 0; }
+.chat-bubble-ai code { background: rgba(232,93,4,0.1); padding: 1px 5px; border-radius: 4px; font-size: 0.8em; }
+
+/* ── Shimmer ────────────────────────────────────────────────────────────────── */
+.shimmer {
+  background: linear-gradient(90deg,var(--bg-subtle) 25%,var(--border) 50%,var(--bg-subtle) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+@keyframes shimmer { to { background-position: -200% 0; } }
+
+/* ── Fade in ────────────────────────────────────────────────────────────────── */
+@keyframes fade-in { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+.animate-fade-in { animation: fade-in 0.2s ease forwards; }
+
+/* ── Dark mode toggle transition ────────────────────────────────────────────── */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color;
+  transition-duration: 0.2s;
+  transition-timing-function: ease;
+}
+/* but don't slow down transforms/opacity animations */
+button, a { transition-property: all; }
