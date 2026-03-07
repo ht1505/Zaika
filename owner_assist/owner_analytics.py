@@ -16,6 +16,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
+from dotenv import load_dotenv
+load_dotenv()
 
 # ── Load data ─────────────────────────────────────────────────────────────────
 _df  = pd.read_csv("dataset_with_confidence.csv")
@@ -228,7 +230,7 @@ class ChatResponse(BaseModel):
 async def chat(req: ChatRequest):
     import httpx
 
-    api_key = "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"  # ← paste your Groq key here
+    api_key = os.getenv("GROQ_API_KEY")  # ← paste your Groq key here
 
     history = _get_history(req.session_id)
     history.append({"role": "user", "content": req.message})
