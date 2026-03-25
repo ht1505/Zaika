@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All Cities - LocalBazaar</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background: #ffe8d6;
+        color: #6b705c;
+        margin: 0;
+      }
+
+      .navbar {
+        padding: 20px 60px;
+        background: #ddbea9;
+        font-weight: 600;
+        font-size: 22px;
+      }
+
+      .container {
+        width: 90%;
+        max-width: 1100px;
+        margin: auto;
+        margin-top: 50px;
+      }
+
+      .title {
+        font-size: 26px;
+        margin-bottom: 25px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 18px;
+      }
+
+      .city-card {
+        background: white;
+        padding: 18px;
+        border-radius: 12px;
+        text-align: center;
+        cursor: pointer;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        transition: 0.25s;
+      }
+
+      .city-card:hover {
+        background: #cb997e;
+        color: white;
+        transform: translateY(-4px);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="navbar">LocalBazaar</div>
+
+    <div class="container">
+      <div class="title">All Cities</div>
+
+      <div class="grid">
+        <div class="city-card">Mumbai</div>
+        <div class="city-card">Delhi</div>
+        <div class="city-card">Bangalore</div>
+        <div class="city-card">Ahmedabad</div>
+        <div class="city-card">Hyderabad</div>
+        <div class="city-card">Chennai</div>
+        <div class="city-card">Pune</div>
+        <div class="city-card">Kolkata</div>
+        <div class="city-card">Jaipur</div>
+        <div class="city-card">Surat</div>
+        <div class="city-card">Lucknow</div>
+        <div class="city-card">Kanpur</div>
+        <div class="city-card">Nagpur</div>
+        <div class="city-card">Indore</div>
+        <div class="city-card">Bhopal</div>
+        <div class="city-card">Vadodara</div>
+        <div class="city-card">Patna</div>
+        <div class="city-card">Ranchi</div>
+        <div class="city-card">Chandigarh</div>
+        <div class="city-card">Coimbatore</div>
+        <div class="city-card">Kochi</div>
+        <div class="city-card">Mysore</div>
+        <div class="city-card">Guwahati</div>
+        <div class="city-card">Visakhapatnam</div>
+        <div class="city-card">Thiruvananthapuram</div>
+      </div>
+    </div>
+  </body>
+</html>

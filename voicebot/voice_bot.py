@@ -41,7 +41,7 @@ for _n, _info in MENU.items():
 
 # ── Keyword → category aliases ────────────────────────────────────────────────
 _ALIASES = {
-    "Pizza":           ["pizza", "piza", "pizaa"],
+    "Pizza":           ["pizza", "piza", "pizaa", "पिज़्ज़ा", "पिज्जा"],
     "Burgers":         ["burger", "burgers", "बर्गर"],
     "Beverages":       ["beverage", "beverages", "drink", "drinks",
                         "cold drink", "cold drinks", "shake", "shakes",
