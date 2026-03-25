@@ -1,0 +1,10 @@
+{
+  "/_app": "pages/_app.js",
+  "/_error": "pages/_error.js",
+  "/_document": "pages/_document.js",
+  "/admin/dashboard": "pages/admin/dashboard.js",
+  "/login": "pages/login.js",
+  "/customer/chat-order": "pages/customer/chat-order.js",
+  "/customer/dashboard": "pages/customer/dashboard.js",
+  "/customer/voice-order": "pages/customer/voice-order.js"
+}
