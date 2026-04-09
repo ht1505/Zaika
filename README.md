@@ -55,22 +55,7 @@ psql -U postgres -d zaika_db -f backend/src/db/seed.sql
 
 ---
 
-### 3. Environment Variables
 
-**backend/.env**
-```env
-PORT=4000
-DATABASE_URL=postgresql://postgres:yourpassword@localhost:5432/zaika_db
-JWT_SECRET=your_super_secret_jwt_key_change_this
-JWT_EXPIRES_IN=7d
-ANTHROPIC_API_KEY=sk-ant-...        # For Claude AI chat
-TWILIO_ACCOUNT_SID=                 # Optional: SMS
-TWILIO_AUTH_TOKEN=                  # Optional: SMS
-TWILIO_PHONE_NUMBER=                # Optional: SMS
-SENDGRID_API_KEY=                   # Optional: Email
-NODE_ENV=development
-FRONTEND_URL=http://localhost:3000
-```
 
 
 ---
